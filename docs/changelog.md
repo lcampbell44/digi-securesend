@@ -2,22 +2,59 @@
 
 All notable changes to SkySend are documented here.
 
-## vNEXT
-*Release: In Progress*
+## v2.12.0 - New Website, Branding & UX Improvements, Security Hardening, and Security Patches
+*Released: July 30, 2026*
 
 ### ✨ Features
 
 - **website**: Added a new public website (homepage, roadmap, blog, and a Server Instances section listing live public instances), plus a Report Abuse page for flagging file and note links.
 - **infra**: Moved the abuse report Cloudflare Worker into the monorepo (`workers/report`), alongside the existing instances worker.
+- **web**: The download page now shows the file name, file list, and size as soon as the link is opened, instead of only after starting the download. ([#66](https://github.com/Skyfay/SkySend/issues/66))
+- **web**: Uploads in "My Uploads" can be given an optional name, and multi-file uploads now list their file names instead of only a count. ([#67](https://github.com/Skyfay/SkySend/issues/67))
+- **server**: Branding assets placed in the data directory are now served by the instance itself, so a custom logo no longer needs an external URL. ([#66](https://github.com/Skyfay/SkySend/issues/66))
+
+### 🐛 Bug Fixes
+
+- **web**: A repeated wrong password on the download page shows the error message again instead of staying silent after the first attempt.
+- **web**: A custom logo that cannot be loaded now falls back to the built-in logo instead of leaving a broken image in the header.
+- **web**: The file list on the download page now scrolls through all files instead of cutting off after the first few, and long file names no longer hide the file size.
+- **client**: Notes with an unlimited view limit now show "3 / ∞" in the TUI note detail instead of "3 / 0 (-3 remaining)". Thanks @Osamaali313 ([#65](https://github.com/Skyfay/SkySend/pull/65))
+- **web**: Share links whose fragment was percent-encoded by a mail security filter now open correctly instead of showing "not found", and warn that the key was exposed. ([#68](https://github.com/Skyfay/SkySend/issues/68))
+
+### 🔒 Security
+
+- **server**: `CUSTOM_LOGO` no longer accepts protocol-relative URLs such as `//example.com/logo.png`, which loaded an external image outside the Content Security Policy origin check.
+- **server**: Updated `@hono/node-server` to 2.0.12 to patch an unauthenticated memory-leak denial of service triggered by aborted WebSocket handshakes (GHSA-9mqv-5hh9-4cgg).
+- **server**: Updated hono to 4.12.32 to patch cross-request data disclosure in JSX server-side rendering, XSS via the `cx()` utility, and header de-duplication in the AWS Lambda adapter (GHSA-hvrm-45r6-mjfj, GHSA-w62v-xxxg-mg59, GHSA-xgm2-5f3f-mvvc).
+- **web**: Updated react-router to 8 to patch a CSRF bypass that allowed actions to run before a 400 response (GHSA-qwww-vcr4-c8h2).
+- **web**: Updated dompurify to 3.4.12 to fix a sanitizer bypass for allowed custom elements (GHSA-c2j3-45gr-mqc4).
+- **infra**: Added pnpm overrides for `sharp` and `brace-expansion`, raised the `postcss` override, and removed the unused `autoprefixer` dependency to clear transitive advisories (GHSA-f88m-g3jw-g9cj, GHSA-3jxr-9vmj-r5cp, GHSA-mh99-v99m-4gvg, GHSA-r28c-9q8g-f849).
+- **server**: The request log no longer records anything after the ID in a file, note, or download path, so a link rewritten by a mail security filter cannot leave its key in the log. ([#68](https://github.com/Skyfay/SkySend/issues/68))
+
+### 🎨 Improvements
+
+- **server**: Startup now points out when `CUSTOM_LOGO` refers to an external host, and how to serve the file from the instance instead.
+- **web**: The selected-files list on the upload page uses the app's own slim scrollbar instead of the browser's native one, and hovering a shortened file name shows it in full.
+
+### 🔄 Changed
+
+- **web**: On password-protected download links, entering the password now unlocks the file details, and the download starts with a separate click. ([#66](https://github.com/Skyfay/SkySend/issues/66))
+- **web**: The placeholder for uploads without metadata now reads "Protected file" instead of "Encrypted file". ([#66](https://github.com/Skyfay/SkySend/issues/66))
+
+### 📝 Documentation
+
+- **docs**: Documented the branding directory and switched the custom logo examples from an external URL to a local path.
+- **docs**: Documented how mail security filters rewrite share links, what that means for the encryption key, and what a reverse proxy logs. ([#68](https://github.com/Skyfay/SkySend/issues/68))
 
 ### 🔧 CI/CD
 
 - **infra**: Added a GitHub Actions workflow to deploy the report worker on push, matching the existing instances worker deploy pipeline.
+- **infra**: `pnpm update:check` now lists outdated dependencies per workspace package with a summary, instead of one merged table that ends in `Command failed with exit code 1`.
 
 ### 🐳 Docker
 
-- **Image**: `skyfay/skysend:vNEXT`
-- **Also tagged as**: `latest`, `vNEXT`
+- **Image**: `skyfay/skysend:v2.12.0`
+- **Also tagged as**: `latest`, `v2`
 - **Platforms**: linux/amd64, linux/arm64
 
 

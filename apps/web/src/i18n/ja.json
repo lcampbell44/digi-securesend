@@ -24,6 +24,13 @@
       "download.firefoxDevToolsRetry",
       "download.firefoxDevToolsContinue",
       "download.cancel",
+      "download.encryptedFile",
+      "common.save",
+      "myUploads.rename",
+      "myUploads.renameTitle",
+      "myUploads.renameDescription",
+      "myUploads.renamePlaceholder",
+      "myUploads.renameFailed",
       "debug.title",
       "debug.download",
       "debug.upload",
@@ -50,7 +57,9 @@
       "debug.close",
       "common.view",
       "common.docs",
-      "errors.insecureContext"
+      "errors.insecureContext",
+      "errors.linkRewritten",
+      "errors.linkRewrittenDesc"
     ],
     "_contributorNote": "このファイルはAIによる初期翻訳です。日本語として自然になるよう確認しています。修正は歓迎します。"
   },
@@ -69,6 +78,7 @@
     "view": "表示",
     "cancel": "キャンセル",
     "confirm": "確認",
+    "save": "保存",
     "close": "閉じる",
     "back": "戻る",
     "docs": "Docs"
@@ -141,7 +151,7 @@
   "download": {
     "title": "ファイルをダウンロード",
     "fileInfo": "ファイル情報",
-    "encryptedFile": "暗号化ファイル",
+    "encryptedFile": "保護されたファイル",
     "size": "サイズ",
     "downloads": "ダウンロード数",
     "expires": "有効期限",
@@ -180,6 +190,11 @@
     "deleteFailed": "アップロードの削除に失敗しました",
     "deleteNoteSuccess": "メモを削除しました",
     "deleteNoteFailed": "メモの削除に失敗しました",
+    "rename": "名前を変更",
+    "renameTitle": "このアップロードに名前を付ける",
+    "renameDescription": "このブラウザーにのみ保存され、あなただけに表示されます。受信者にこの名前が見えることはありません。",
+    "renamePlaceholder": "例: プロジェクト資料 - 案件 4711",
+    "renameFailed": "アップロードの名前を変更できませんでした",
     "note": "メモ",
     "filter": {
       "all": "すべて",
@@ -330,6 +345,8 @@
   "errors": {
     "insecureContext": "HTTPSが必要です",
     "originNotAllowed": "サーバーがこのオリジンをブロックしました",
-    "s3CorsError": "S3 CORSが設定されていません"
+    "s3CorsError": "S3 CORSが設定されていません",
+    "linkRewritten": "リンクが転送中に変更されました",
+    "linkRewrittenDesc": "メールセキュリティフィルターがこのリンクを書き換えたため、復号キーがサーバーから見える状態になりました。内容が機密の場合は、受け取り次第、送信者に削除を依頼してください。"
   }
 }

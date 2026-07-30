@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
   Shield,
@@ -21,7 +21,8 @@ import { DebugPanel } from "@/components/DebugPanel";
 import { useDownload } from "@/hooks/useDownload";
 import { useFaviconProgress } from "@/hooks/useFaviconProgress";
 import { hashWasmArgon2 } from "@/lib/argon2";
-import { showKnownErrorToast } from "@/lib/toast";
+import { showKnownErrorToast, showRewrittenLinkWarning } from "@/lib/toast";
+import { wasShareLinkRewritten } from "@/lib/rewritten-link";
 
 export function DownloadPage() {
   const { t } = useTranslation();
@@ -36,10 +37,17 @@ export function DownloadPage() {
 
   useEffect(() => {
     if (id && secret) {
-      downloadHook.loadInfo(id);
+      downloadHook.loadInfo(id, secret);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // A rewritten link means the key reached the server in the request path.
+  useEffect(() => {
+    if (wasShareLinkRewritten()) {
+      showRewrittenLinkWarning();
+    }
+  }, []);
 
   // Remove the key from the URL fragment once decryption starts.
   // The key is now held in memory; removing it prevents browser-history leakage.
@@ -127,9 +135,11 @@ export function DownloadPage() {
     );
   }
 
+  // Unlocking only verifies the password and decrypts the metadata. The transfer
+  // starts with a separate click, so no download is spent on a look at the file.
   const handlePasswordSubmit = (pw: string) => {
     setPasswordInput(pw);
-    downloadHook.download(id, secret, pw, hashWasmArgon2);
+    downloadHook.unlock(id, secret, pw, hashWasmArgon2);
   };
 
   const handleDownload = () => {
@@ -145,11 +155,12 @@ export function DownloadPage() {
 
       <Card>
         <CardContent className="space-y-6 pt-6">
-          {/* Password prompt */}
-          {downloadHook.phase === "needs-password" && (
+          {/* Password prompt - stays mounted during the Argon2id stretch */}
+          {(downloadHook.phase === "needs-password" ||
+            downloadHook.phase === "verifying-password") && (
             <PasswordPrompt
               onSubmit={handlePasswordSubmit}
-              loading={false}
+              loading={downloadHook.phase === "verifying-password"}
               error={downloadHook.error}
             />
           )}
@@ -175,6 +186,7 @@ export function DownloadPage() {
           {/* Download card when info is available and no password needed (or already unlocked) */}
           {downloadHook.info &&
             downloadHook.phase !== "needs-password" &&
+            downloadHook.phase !== "verifying-password" &&
             downloadHook.phase !== "safari-warning" &&
             downloadHook.phase !== "firefox-devtools-warning" && (
               <DownloadCard

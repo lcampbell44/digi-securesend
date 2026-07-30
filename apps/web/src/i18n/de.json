@@ -14,6 +14,7 @@
     "view": "Ansehen",
     "cancel": "Abbrechen",
     "confirm": "Bestätigen",
+    "save": "Speichern",
     "close": "Schließen",
     "back": "Zurück",
     "docs": "Docs"
@@ -86,7 +87,7 @@
   "download": {
     "title": "Datei herunterladen",
     "fileInfo": "Datei-Informationen",
-    "encryptedFile": "Verschlüsselte Datei",
+    "encryptedFile": "Geschützte Datei",
     "size": "Größe",
     "downloads": "Downloads",
     "expires": "Läuft ab",
@@ -125,6 +126,11 @@
     "deleteFailed": "Upload konnte nicht gelöscht werden",
     "deleteNoteSuccess": "Notiz gelöscht",
     "deleteNoteFailed": "Notiz konnte nicht gelöscht werden",
+    "rename": "Umbenennen",
+    "renameTitle": "Upload benennen",
+    "renameDescription": "Wird nur in diesem Browser gespeichert und ist nur für Sie sichtbar. Empfänger sehen diesen Namen nie.",
+    "renamePlaceholder": "z. B. Projektunterlagen - Vorgang 4711",
+    "renameFailed": "Upload konnte nicht umbenannt werden",
     "note": "Notiz",
     "filter": {
       "all": "Alle",
@@ -275,6 +281,8 @@
   "errors": {
     "insecureContext": "HTTPS erforderlich",
     "originNotAllowed": "Server hat diesen Ursprung blockiert",
-    "s3CorsError": "S3 CORS nicht konfiguriert"
+    "s3CorsError": "S3 CORS nicht konfiguriert",
+    "linkRewritten": "Link wurde unterwegs verändert",
+    "linkRewrittenDesc": "Ein Mail-Security-Filter hat diesen Link umgeschrieben, dadurch war der Schlüssel für den Server sichtbar. Lass den Inhalt bei vertraulichen Daten vom Absender löschen, sobald du ihn hast."
   }
 }
