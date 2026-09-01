@@ -22,6 +22,18 @@ export default tseslint.config(
     },
   },
   {
+    // Digi fork: pre-paint theme resolver. A plain browser script rather than a
+    // module, because it has to run render-blocking in <head>, and a file
+    // rather than an inline script, because the CSP allows scriptSrc 'self'
+    // only.
+    files: ["apps/web/public/theme-init.js"],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+  {
     files: ["apps/web/**/*.{ts,tsx}", "apps/client/**/*.{ts,tsx}"],
     plugins: {
       "react-hooks": reactHooks,

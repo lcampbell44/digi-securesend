@@ -1,30 +1,66 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="End-to-end encrypted file and note sharing. No accounts, no tracking." />
+    <meta
+      name="description"
+      content="Digi SecureSend - end-to-end encrypted file and note transfer. Encrypted in your browser, never readable by the server."
+    />
     <meta name="referrer" content="no-referrer" />
-    <meta name="theme-color" content="#09090b" />
+
+    <!-- Matches --color-background in each theme (src/index.css). -->
+    <meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#131518" media="(prefers-color-scheme: dark)" />
+
+    <!--
+      Resolve the theme before first paint. Must be a same-origin file rather
+      than an inline script: the server's CSP allows scriptSrc 'self' only,
+      with no 'unsafe-inline'. Plain script (no type=module, no defer) so it is
+      render-blocking. See public/theme-init.js.
+    -->
+    <script src="/theme-init.js"></script>
+
+    <!-- The two weights above the fold. The rest load on demand. -->
+    <link
+      rel="preload"
+      href="/fonts/SourceSans3-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/SourceSans3-Medium.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="__CUSTOM_TITLE__ | Encrypted File & Note Transfer" />
-    <meta property="og:description" content="End-to-end encrypted file and note sharing. No accounts, no tracking." />
-    <meta property="og:site_name" content="SkySend" />
+    <meta property="og:title" content="__CUSTOM_TITLE__ | Encrypted File &amp; Note Sharing" />
+    <meta
+      property="og:description"
+      content="Digi SecureSend - end-to-end encrypted file and note transfer. Encrypted in your browser, never readable by the server."
+    />
+    <meta property="og:site_name" content="Digi SecureSend" />
     <meta property="og:image" content="%VITE_OG_IMAGE%" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="__CUSTOM_TITLE__ | Encrypted File & Note Transfer" />
-    <meta name="twitter:description" content="End-to-end encrypted file and note sharing. No accounts, no tracking." />
+    <meta name="twitter:title" content="__CUSTOM_TITLE__ | Encrypted File &amp; Note Sharing" />
+    <meta
+      name="twitter:description"
+      content="Digi SecureSend - end-to-end encrypted file and note transfer. Encrypted in your browser, never readable by the server."
+    />
     <meta name="twitter:image" content="%VITE_OG_IMAGE%" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>__CUSTOM_TITLE__ | Encrypted File & Note Transfer</title>
+    <title>__CUSTOM_TITLE__ | Encrypted File &amp; Note Sharing</title>
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">
     <div id="root"></div>

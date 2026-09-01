@@ -1,11 +1,11 @@
 {
-  "name": "SkySend",
-  "short_name": "SkySend",
-  "description": "End-to-end encrypted file sharing. No accounts, no tracking.",
+  "name": "Digi SecureSend",
+  "short_name": "SecureSend",
+  "description": "End-to-end encrypted file and note transfer for Digi International.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#09090b",
-  "theme_color": "#09090b",
+  "background_color": "#f9fafb",
+  "theme_color": "#84c361",
   "icons": [
     {
       "src": "/pwa-192x192.png",

@@ -10,8 +10,23 @@ import { useServerConfig } from "@/hooks/useServerConfig";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
-/** Built-in logo shipped with the frontend build. */
-const DEFAULT_LOGO = "/logo.svg";
+/** Digi wordmark, shipped with the frontend build. Two variants because the
+ * 2-colour lockup is dark gray on light surfaces and the reverse lockup is
+ * white on dark ones - the green stays constant across both. */
+const DIGI_LOGO = "/digi-logo.png";
+const DIGI_LOGO_DARK = "/digi-logo-rev.png";
+
+/** Public mirror of THIS fork's source.
+ *
+ * AGPLv3 section 13 requires a modified version to prominently offer its own
+ * Corresponding Source to everyone who uses it over a network - and that
+ * includes share-link recipients outside Digi, not just signed-in uploaders.
+ * Upstream hardcodes this link to Skyfay/SkySend, which is the wrong source for
+ * a modified build: it is not the code being run. Point it at the mirror.
+ *
+ * If the mirror ever moves, this URL moves with it. A dead link here is a
+ * licence violation, not a cosmetic bug. */
+const SOURCE_URL = "https://github.com/lcampbell44/digi-securesend";
 
 export function Layout() {
   const { t } = useTranslation();
@@ -25,14 +40,20 @@ export function Layout() {
   // leave a broken image in the header, so fall back to the built-in logo.
   const [failedLogoSrc, setFailedLogoSrc] = useState<string | null>(null);
   const customLogo = config?.customLogo ?? null;
-  const logoSrc =
-    customLogo && customLogo !== failedLogoSrc ? customLogo : DEFAULT_LOGO;
+  const operatorLogo = customLogo && customLogo !== failedLogoSrc ? customLogo : null;
   const title = config?.customTitle ?? t("common.appName");
   const oidcEnabled = config?.oidcEnabled ?? false;
 
   useEffect(() => {
+    // Wait for the server config. `title` falls back to t("common.appName"),
+    // which is upstream's "SkySend", so running this before /api/config
+    // resolves replaces the correct server-rendered title with the upstream
+    // brand for a few hundred milliseconds - the tab visibly reads "SkySend"
+    // on every cold load. The server already injected CUSTOM_TITLE into the
+    // HTML, so doing nothing here is the correct behaviour until config lands.
+    if (!config) return;
     document.title = `${title} | ${t("common.tabSubtitle")}`;
-  }, [title, t]);
+  }, [config, title, t]);
 
   const [lastPathname, setLastPathname] = useState(location.pathname);
   if (lastPathname !== location.pathname) {
@@ -67,13 +88,25 @@ export function Layout() {
             to="/"
             className="flex flex-1 min-w-0 items-center gap-2 text-lg font-bold tracking-tight"
           >
-            <img
-              src={logoSrc}
-              alt=""
-              className="h-6 w-6 shrink-0"
-              onError={() => setFailedLogoSrc(logoSrc)}
-            />
-            <span className="truncate">{title}</span>
+            {operatorLogo ? (
+              <img
+                src={operatorLogo}
+                alt=""
+                className="h-6 w-6 shrink-0"
+                onError={() => setFailedLogoSrc(operatorLogo)}
+              />
+            ) : (
+              <>
+                <img src={DIGI_LOGO} alt="Digi" className="h-7 w-auto shrink-0 dark:hidden" />
+                <img
+                  src={DIGI_LOGO_DARK}
+                  alt="Digi"
+                  className="hidden h-7 w-auto shrink-0 dark:block"
+                />
+                <span className="h-5 w-px shrink-0 bg-border" aria-hidden="true" />
+              </>
+            )}
+            <span className="truncate font-semibold">{title}</span>
           </Link>
 
           {/* Desktop nav */}
@@ -95,8 +128,9 @@ export function Layout() {
             ))}
             <LanguageSwitcher />
             <ThemeToggle />
-            {oidcEnabled && isLoggedIn && (
-              authLoading ? (
+            {oidcEnabled &&
+              isLoggedIn &&
+              (authLoading ? (
                 <Skeleton className="h-8 w-8 rounded-md" />
               ) : (
                 <Tooltip>
@@ -114,8 +148,7 @@ export function Layout() {
                     {user?.name} - {t("auth.logout")}
                   </TooltipContent>
                 </Tooltip>
-              )
-            )}
+              ))}
           </nav>
 
           {/* Mobile hamburger */}
@@ -161,7 +194,10 @@ export function Layout() {
                     ) : (
                       <button
                         type="button"
-                        onClick={() => { logout(); setMobileMenuOpen(false); }}
+                        onClick={() => {
+                          logout();
+                          setMobileMenuOpen(false);
+                        }}
                         className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                       >
                         <LogOut className="h-4 w-4" />
@@ -187,12 +223,17 @@ export function Layout() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <a
-              href="https://github.com/skyfay/skysend"
+              href={SOURCE_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
             >
-              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <svg
+                className="h-3.5 w-3.5"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
                 <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z" />
               </svg>
               {t("footer.source")}

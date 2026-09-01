@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
+// buildEndSessionUrl is intentionally not imported: see the logout handler.
 import {
   discovery,
   buildAuthorizationUrl,
   authorizationCodeGrant,
-  buildEndSessionUrl,
 } from "openid-client";
 import type { Config } from "../lib/config.js";
 import type { OidcAdapterProfile } from "../auth/types.js";
@@ -197,17 +197,26 @@ export function createAuthRoute(config: Config, adapter: OidcAdapterProfile): Ho
   app.get("/logout", (c) => {
     c.header("Set-Cookie", `${SESSION_COOKIE}=; ${clearCookieOptions()}`);
 
-    // Use cached config for end-session redirect if available
-    if (cachedOidcConfig) {
-      try {
-        const endSessionUrl = buildEndSessionUrl(cachedOidcConfig, {
-          post_logout_redirect_uri: config.BASE_URL + "/",
-        });
-        return c.redirect(endSessionUrl.href, 302);
-      } catch {
-        // Provider doesn't support end_session
-      }
-    }
+    // DIGI FORK: local logout only - no RP-initiated redirect to the IdP.
+    //
+    // Upstream redirects to the provider's end_session endpoint here. Against
+    // an Okta ORG authorization server that always fails: the org server
+    // requires `id_token_hint`, and rejects the client_id +
+    // post_logout_redirect_uri form that openid-client builds. It returns 400
+    // even with no query parameters at all, so registering a sign-out redirect
+    // URI does not help. Only a custom authorization server accepts the
+    // client_id form, and the tenant this deployment uses has none.
+    //
+    // Sending id_token_hint would mean persisting the ID token in the session
+    // cookie, and we deliberately do not, for a product reason rather than a
+    // technical one: that endpoint ends the OKTA SSO SESSION, not just this
+    // app's. Signing out of a file-sharing tool would sign the user out of
+    // every other Digi Okta app in the same browser.
+    //
+    // Clearing the cookie above is a real logout - the session JWT is the only
+    // thing authorising uploads. What survives is the Okta session, so the next
+    // "Login with SSO" re-authenticates without a prompt. That is the normal
+    // behaviour for an internal SSO app and matches the rest of the fleet.
     return c.redirect("/", 302);
   });
 
